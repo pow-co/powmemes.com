@@ -16,12 +16,20 @@ import Link from "next/link";
 import { useRelay } from "../context/RelayContext";
 import { useAPI } from "../hooks/useAPI";
 
+import BSocial from 'bsocial';
+
 import moment from "moment";
 import { useTuning } from "../context/TuningContext";
 import { useRouter } from "next/router";
 import { useBitcoin } from "../context/BitcoinContext";
 
 import {useDropzone} from 'react-dropzone'
+
+function buf2hex(buffer) { // buffer is an ArrayBuffer
+  return [...new Uint8Array(buffer)]
+      .map(x => x.toString(16).padStart(2, '0'))
+      .join('');
+}
 
 const baseStyle = {
   flex: 1,
@@ -101,6 +109,34 @@ function MemeDropzone() {
       // Do whatever you want with the file contents
         const binaryStr = reader.result
         console.log('file', binaryStr)
+
+        const hex = buf2hex(binaryStr)
+
+        console.log('file hex', hex)
+
+        const base64 = Buffer.from(hex, 'hex').toString('base64')
+
+        console.log('file base64', base64)
+
+        const bsocial = new BSocial('powmemes.com');
+
+        const post = bsocial.post();
+        // and image data Url
+        post.addImage(`data:image/png;base64,${base64}`);
+
+        const ops = post.getOps('hex');
+
+        console.log('file ops', ops)
+
+        //@ts-ignore
+        window.relayone.send({
+          to: ops.join(' ')
+        })
+        .then(result => {
+          console.log('relayx.result', result)
+        })
+
+        
       }
       reader.readAsArrayBuffer(file)
     })
@@ -152,7 +188,7 @@ function MemeDropzone() {
     <section className='container'>
     <div {...getRootProps({ style })}>
       <input {...getInputProps()} />
-      <p>Drag 'n' drop a DANK MEME here or click to select an image</p>
+      <p>Drag & Drop a DANK MEME HERE or click to select an image</p>
     </div>
        <aside style={thumbsContainer}>
          {thumbs}

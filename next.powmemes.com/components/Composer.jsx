@@ -80,7 +80,7 @@ const Composer = ({ reply_tx, onSuccess }) => {
         switch (tag){
           //case "1F9E9":
             case "question":
-            setPlaceholder("Ask Bitcoin a question")
+            setPlaceholder("Shoot your shot")
             break;
           //case "1F4A1":
             case "answer":
