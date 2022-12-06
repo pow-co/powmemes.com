@@ -82,7 +82,7 @@ export default function Features() {
           <div className="bg-gray-100 dark:bg-gray-600 lg:rounded-lg mt-7 py-8 px-7 w-full flex flex-col lg:flex-row justify-between">
             <div>
               <p className="mt-4 text-2xl font-bold text-gray-900 dark:text-white text-center lg:text-left">
-                Ask Bitcoin Features
+                PowMemes Features
               </p>
               <p className="text-gray-700 dark:text-gray-300 text-base mt-2 text-center lg:text-left">
                 You buy it, we will build it. Contribute to our next big feature
@@ -108,10 +108,10 @@ export default function Features() {
             <div className="col-span-12 lg:col-span-6 xl:col-span-4 bg-gray-100 dark:bg-gray-600 rounded-lg p-4 w-full relative flex flex-col">
               <p className="text-xs text-blue-500 mb-1.5">🔦 Spotlight</p>
               <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                Buy askbitcoin.com domain
+                Give me money
               </p>
               <p className="text-sm text-gray-900 opacity-70 dark:text-white mt-2">
-                This will help strenghten the Ask Bitcoin brand
+                This will help strenghthen my balance sheet
               </p>
               <div className="grow" />
               <div className="mt-3">

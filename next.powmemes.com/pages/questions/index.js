@@ -9,25 +9,24 @@ const Questions = () => {
     data,
     error,
     refresh,
-    loading: questions_loading,
-  } = useAPI(`/questions?start_timestamp=${startTimestamp}`);
-  let { data: recent, loading: recent_loading } = useAPI(
-    "/recent/questions?limit=100"
-  );
+    loading: rankings_loading,
+  } = useAPI(`/rankings?app=powmemes.com&type=meme&start_timestamp=${startTimestamp}`);
 
-  let questions = data?.questions;
-  let boosted_tx = questions?.map((q) => q.tx_id);
-  let recent_questions = recent?.questions;
-  recent_questions = recent_questions?.filter(
+  let { data: recent, loading: recent_loading } = useAPI("/events?app=powmemes.com&type=meme");
+
+  let rankings = data?.rankings;
+  let boosted_tx = rankings?.map((q) => q.tx_id);
+  let recent_memes = recent?.events;
+  recent_memes = recent_memes?.filter(
     (q) => !boosted_tx?.includes(q.tx_id)
   );
 
   return (
     <Dashboard
-      data={questions}
-      recent={recent_questions}
+      data={rankings}
+      recent={recent_memes}
       error={error}
-      loading={questions_loading || recent_loading}
+      loading={rankings_loading || recent_loading}
     />
   );
 };

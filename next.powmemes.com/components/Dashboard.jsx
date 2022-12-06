@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useMemo, useContext, useEffect, useState } from "react";
 import Head from "next/head";
 import {
   ThreeColumnLayout,
@@ -21,8 +21,144 @@ import { useTuning } from "../context/TuningContext";
 import { useRouter } from "next/router";
 import { useBitcoin } from "../context/BitcoinContext";
 
+import {useDropzone} from 'react-dropzone'
+
+const baseStyle = {
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: '20px',
+  borderWidth: 2,
+  borderRadius: 2,
+  borderColor: '#eeeeee',
+  borderStyle: 'dashed',
+  backgroundColor: '#fafafa',
+  color: '#bdbdbd',
+  outline: 'none',
+  transition: 'border .24s ease-in-out'
+};
+
+const focusedStyle = {
+  borderColor: '#2196f3'
+};
+
+const acceptStyle = {
+  borderColor: '#00e676'
+};
+
+const rejectStyle = {
+  borderColor: '#ff1744'
+};
+
+const thumbsContainer = {
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginTop: 16
+};
+
+const thumb = {
+  display: 'inline-flex',
+  borderRadius: 2,
+  border: '1px solid #eaeaea',
+  marginBottom: 8,
+  marginRight: 8,
+  width: 100,
+  height: 100,
+  padding: 4,
+  boxSizing: 'border-box'
+};
+
+const thumbInner = {
+  display: 'flex',
+  minWidth: 0,
+  overflow: 'hidden'
+};
+
+const img = {
+  display: 'block',
+  width: 'auto',
+  height: '100%'
+};
+
+
 function ago(period) {
   return moment().subtract(1, period).unix() * 1000;
+}
+
+function MemeDropzone() {
+
+  const [files, setFiles] = useState([]);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    acceptedFiles.forEach((file) => {
+      const reader = new FileReader()
+
+      reader.onabort = () => console.log('file reading was aborted')
+      reader.onerror = () => console.log('file reading has failed')
+      reader.onload = () => {
+      // Do whatever you want with the file contents
+        const binaryStr = reader.result
+        console.log('file', binaryStr)
+      }
+      reader.readAsArrayBuffer(file)
+    })
+
+    setFiles(acceptedFiles.map(file => Object.assign(file, {
+      preview: URL.createObjectURL(file)
+    })));
+    
+  }, [])
+
+  const {
+    getRootProps,
+    getInputProps,
+    isFocused,
+    isDragAccept,
+    isDragReject} = useDropzone({onDrop, accept: {'image/*': []}})
+
+    const thumbs = files.map(file => (
+      <div style={thumb} key={file.name}>
+        <div style={thumbInner}>
+          <img
+            src={file.preview}
+            style={img}
+            // Revoke data uri after image is loaded
+            onLoad={() => { URL.revokeObjectURL(file.preview) }}
+          />
+        </div>
+      </div>
+    ));
+  
+    useEffect(() => {
+      // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+      return () => files.forEach(file => URL.revokeObjectURL(file.preview));
+    }, []);
+  
+
+  const style = useMemo(() => ({
+    ...baseStyle,
+    ...(isFocused ? focusedStyle : {}),
+    ...(isDragAccept ? acceptStyle : {}),
+    ...(isDragReject ? rejectStyle : {})
+  }), [
+    isFocused,
+    isDragAccept,
+    isDragReject
+  ]);
+
+  return (
+    <section className='container'>
+    <div {...getRootProps({ style })}>
+      <input {...getInputProps()} />
+      <p>Drag 'n' drop a DANK MEME here or click to select an image</p>
+    </div>
+       <aside style={thumbsContainer}>
+         {thumbs}
+       </aside>
+      </section>
+  )
 }
 
 const Dashboard = ({ data, recent, error, loading }) => {
@@ -61,12 +197,14 @@ const Dashboard = ({ data, recent, error, loading }) => {
       <div className="col-span-12 lg:col-span-6 min-h-screen">
         {tag !== "answer" && (
           <div className="hidden lg:block mt-8">
-            <Composer />
+            <MemeDropzone/>
+
           </div>
         )}
         <div className="px-4 mt-2">
           <div className="flex my-6">
             <div className="flex">
+
               {/* <div
                 onClick={() => handleChangeTab("")}
                 className={
@@ -77,30 +215,8 @@ const Dashboard = ({ data, recent, error, loading }) => {
               >
                 All 🦚
               </div> */}
-              <div
-                //onClick={() => handleChangeTab("1F9E9")}
-                onClick={() => handleChangeTab("question")}
-                className={
-                  //tag === "1F9E9"
-                  tag === "question"
-                    ? "text-sm leading-4 py-2 px-2 sm:px-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 font-medium mr-2 cursor-pointer rounded-md whitespace-nowrap"
-                    : "text-sm leading-4 py-2 px-2 sm:px-3 text-gray-700 dark:text-gray-300 font-normal mr-2 cursor-pointer rounded-md whitespace-nowrap"
-                }
-              >
-                Questions
-              </div>
-              <div
-                //onClick={() => handleChangeTab("1F4A1")}
-                onClick={() => handleChangeTab("answer")}
-                className={
-                  //tag === "1F4A1"
-                  tag === "answer"
-                    ? "text-sm leading-4 py-2 px-2 sm:px-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 font-medium mr-2 cursor-pointer rounded-md whitespace-nowrap"
-                    : "text-sm leading-4 py-2 px-2 sm:px-3 text-gray-700 dark:text-gray-300 font-normal mr-2 cursor-pointer rounded-md whitespace-nowrap"
-                }
-              >
-                Answers
-              </div>
+
+
               {/* <div
                 //onClick={() => handleChangeTab("1F48E")}
                 onClick={() => handleChangeTab("project")}
