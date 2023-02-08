@@ -1,0 +1,23 @@
+{
+  "name": "powmemes.com",
+  "version": "1.0.0",
+  "description": "Ranking The World's Memes Using Bitcoin Hashpower",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pow-co/powmemes.com.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pow-co/powmemes.com/issues"
+  },
+  "homepage": "https://github.com/pow-co/powmemes.com#readme",
+  "dependencies": {
+    "@types/node": "^18.13.0"
+  }
+}
