@@ -18,6 +18,8 @@ import { useAPI } from "../hooks/useAPI";
 
 import BSocial from 'bsocial';
 
+import { wrapRelayx } from 'stag-relayx'
+
 import moment from "moment";
 import { useTuning } from "../context/TuningContext";
 import { useRouter } from "next/router";
@@ -126,17 +128,36 @@ function MemeDropzone() {
 
         const ops = post.getOps('hex');
 
+        const utf8 = post.getOps('utf8');
+
         console.log('file ops', ops)
 
+        console.log('file ops utf8', utf8)
+
+        const stag = wrapRelayx(relayone)
+
+        window.stag = stag
+
+        const opReturn = ops.map(op => `0x${op}`)
+
+        //return
+
         //@ts-ignore
-        window.relayone.send({
-          to: ops.join(' ')
+        const { txid, rawtx } = window.relayone.send({
+          to: 'johngalt@relayx.io',
+          amount: 0.000052,
+          currency: 'BSV',
+          opReturn
         })
         .then(result => {
           console.log('relayx.result', result)
-        })
 
-        
+          window.location = `https://pow.co/${result.txid}`
+        })
+        .catch(error => {
+          console.log('relayx.error', error)
+        })
+      
       }
       reader.readAsArrayBuffer(file)
     })
