@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+
+  typescript_backend:
+    build: typescript-server/
+    ports:
+      - "5200:5200"
+    environment:  
+      DATABASE_URL: postgres://user:password@postgres_database:5432/powmemes_dev
+      DEV_DATABASE_URL: postgres://user:password@postgres_database:5432/powmemes_dev
+      AMQP_URL: amqp://guest:guest@message_exchange:5672/
+      HOST: 0.0.0.0
+      PORT: 5200
+    depends_on:
+      - postgres_database
+      - message_exchange
+
+  frontend_webapp:
+    build: nextjs-frontend/
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE: ""
+      API_BASE: "/v1/api"
+
+    depends_on:
+      - typescript_backend
+
+  postgres_database:
+    image: "postgis/postgis"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=powmemes_dev
+    volumes:
+      - ./.devops/postgresql/data:/var/lib/postgresql/data
+
+  message_exchange:
+    container_name: message_exchange
+    image: 'rabbitmq:3-management'
+    ports:
+      - '5672:5672'
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=/
+
